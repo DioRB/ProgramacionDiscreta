@@ -1,0 +1,140 @@
+﻿@page "/cesar"
+
+@using ProgramacionDiscreta.Src.Criptografia.Cesar
+@using ProgramacionDiscreta.Src.Criptografia.Comun
+
+
+@inject CesarCipher CesarCipher
+
+
+@*Html para la visualización*@
+<h1>Cifrado César</h1>
+
+<p>
+    Implementación del cifrado César utilizando desplazamientos sobre el alfabeto latino.
+</p>
+
+<hr />
+
+<div class="input-group">
+
+    <label>Texto</label>
+
+    <textarea @bind="InputText"></textarea>
+
+</div>
+
+<div class="input-group">
+
+    <label>Desplazamiento</label>
+
+    <input type="number"
+           @bind="Shift" />
+
+</div>
+
+<div class="button-group">
+
+    <button class="primary-btn"
+            @onclick="Encrypt">
+
+        Cifrar
+
+    </button>
+
+    <button class="primary-btn"
+            @onclick="Decrypt">
+
+        Descifrar
+
+    </button>
+
+    <button class="primary-btn"
+            @onclick="BruteForce">
+
+        Fuerza Bruta
+
+    </button>
+
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Result))
+{
+    <hr />
+
+    <h3>Resultado</h3>
+
+    <p>@Result</p>
+}
+
+@if (BruteForceResults.Any())
+{
+    <hr />
+
+    <h3>Fuerza Bruta</h3>
+
+    <table class="table">
+
+        <thead>
+
+            <tr>
+
+                <th>k</th>
+
+                <th>Texto</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in BruteForceResults)
+            {
+                <tr>
+
+                    <td>@item.Shift</td>
+
+                    <td>@item.Text</td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+}
+
+@code {
+
+    private string InputText = "";
+
+    private int Shift = 3;
+
+    private string Result = "";
+
+    private List<CesarBruteForceResult> BruteForceResults = new();
+
+    //Metodos que usan las funciones de cesar
+    private void Encrypt()
+    {
+        Result = CesarCipher.Encrypt(InputText, Shift);
+
+        BruteForceResults.Clear();
+    }
+
+    private void Decrypt()
+    {
+        Result = CesarCipher.Decrypt(InputText, Shift);
+
+        BruteForceResults.Clear();
+    }
+
+    private void BruteForce()
+    {
+        BruteForceResults = CesarCipher.BruteForce(InputText);
+
+        Result = "";
+    }
+
+}

@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
     <Folder Include="Src\AlgebraBooleana\" />
     <Folder Include="Src\Core\" />
     <Folder Include="Src\Cuantico\" />
@@ -26,8 +25,6 @@
     <Folder Include="Views\Boolean\" />
     <Folder Include="Views\Cuantico\" />
     <Folder Include="Views\Grafos\" />
-    <Folder Include="Views\MPC\" />
-    <Folder Include="Views\RSA\" />
     <Folder Include="Views\Shannon\" />
   </ItemGroup>
 

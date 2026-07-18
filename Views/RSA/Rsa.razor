@@ -1,0 +1,193 @@
+﻿@page "/rsa"
+
+@using System.Numerics
+@using ProgramacionDiscreta.Src.Criptografia.RSA;
+
+@inject RSAService RSAService
+
+<h1>RSA de juguete</h1>
+
+<p>
+    Implementación simplificada del algoritmo RSA para comprender el funcionamiento
+    de la criptografía de clave pública.
+</p>
+
+<hr />
+
+<div class="input-group">
+    <label>Primo p</label>
+    <input type="number"
+           @bind="P" />
+</div>
+
+<div class="input-group">
+    <label>Primo q</label>
+    <input type="number"
+           @bind="Q" />
+</div>
+
+<div class="input-group">
+    <label>Exponente público e</label>
+    <input type="number"
+           @bind="E" />
+</div>
+
+<div class="input-group">
+    <label>Mensaje M</label>
+    <input type="number"
+           @bind="Message" />
+</div>
+
+<button class="primary-btn" @onclick="Calculate">
+    Calcular RSA
+</button>
+
+@if (Result != null)
+{
+    <hr />
+
+    @if (!Result.IsValid)
+    {
+        <div class="validation-box">
+            <strong>Error</strong>
+            <p>@Result.ValidationMessage</p>
+        </div>
+    }
+    else
+    {
+        <h2>Resultados</h2>
+
+        <table class="table">
+            <tbody>
+
+                <tr>
+                    <td><strong>n = p · q</strong></td>
+                    <td>@Result.N</td>
+                </tr>
+
+                <tr>
+                    <td><strong>φ(n)</strong></td>
+                    <td>@Result.Phi</td>
+                </tr>
+
+                <tr>
+                    <td><strong>Clave pública (e)</strong></td>
+                    <td>@Result.E</td>
+                </tr>
+
+                <tr>
+                    <td><strong>Clave privada (d)</strong></td>
+                    <td>@Result.D</td>
+                </tr>
+
+                <tr>
+                    <td><strong>Mensaje original</strong></td>
+                    <td>@Result.Message</td>
+                </tr>
+
+                <tr>
+                    <td><strong>Mensaje cifrado</strong></td>
+                    <td>@Result.Cipher</td>
+                </tr>
+
+                <tr>
+                    <td><strong>Mensaje descifrado</strong></td>
+                    <td>@Result.DecryptedMessage</td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <hr />
+
+        <h2>Explicación del proceso</h2>
+
+        <ol>
+
+            <li>
+                Se calculó el módulo:
+                <br />
+                <strong>n = p × q = @P × @Q = @Result.N</strong>
+            </li>
+
+            <br />
+
+            <li>
+                Se calculó la función de Euler:
+                <br />
+                <strong>φ(n) = (p − 1)(q − 1) = (@P - 1)(@Q - 1) = @Result.Phi</strong>
+            </li>
+
+            <br />
+
+            <li>
+                Se verificó que:
+                <br />
+                <strong>gcd(e, φ(n)) = 1</strong>
+            </li>
+
+            <br />
+
+            <li>
+                Se calculó el inverso modular:
+                <br />
+                <strong>d = @Result.D</strong>
+            </li>
+
+            <br />
+
+            <li>
+                Se cifró el mensaje usando:
+                <br />
+                <strong>C = M<sup>e</sup> mod n</strong>
+
+                <br /><br />
+
+                C = @Result.Message<sup>@Result.E</sup> mod @Result.N
+
+                <br />
+
+                <strong>C = @Result.Cipher</strong>
+            </li>
+
+            <br />
+
+            <li>
+                Se descifró usando:
+                <br />
+                <strong>M = C<sup>d</sup> mod n</strong>
+
+                <br /><br />
+
+                M = @Result.Cipher<sup>@Result.D</sup> mod @Result.N
+
+                <br />
+
+                <strong>M = @Result.DecryptedMessage</strong>
+            </li>
+
+        </ol>
+    }
+}
+
+@code
+{
+    private int P = 61;
+
+    private int Q = 53;
+
+    private int E = 17;
+
+    private int Message = 65;
+
+    private RSAResultModel? Result;
+
+    private void Calculate()
+    {
+        Result = RSAService.Process(
+            new BigInteger(P),
+            new BigInteger(Q),
+            new BigInteger(E),
+            new BigInteger (Message));
+    }
+}

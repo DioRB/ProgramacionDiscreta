@@ -1,0 +1,195 @@
+﻿@page "/mpc"
+
+@using ProgramacionDiscreta.Src.Criptografia.MPC;
+
+@inject MPC MPCService
+
+<h1>Computación Multipartita Segura (MPC)</h1>
+
+<p>
+    Simulación de compartición secreta aditiva utilizando tres servidores.
+</p>
+
+<hr />
+
+<div class="input-group">
+
+    <label>Notas (separadas por comas)</label>
+
+    <input @bind="GradesInput" />
+
+</div>
+
+<button class="primary-btn"
+        @onclick="Calculate">
+
+    Calcular
+
+</button>
+
+@if (!string.IsNullOrWhiteSpace(ValidationMessage))
+{
+    <div class="validation-box">
+        <strong>Error:</strong>
+        <p>@ValidationMessage</p>
+    </div>
+}
+
+@if (Result != null)
+{
+    <hr />
+
+    <h2>Compartición de las notas</h2>
+
+    <table class="table">
+
+        <thead>
+
+            <tr>
+
+                <th>Nota</th>
+
+                <th>Servidor 1</th>
+
+                <th>Servidor 2</th>
+
+                <th>Servidor 3</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var share in Result.Shares)
+            {
+                <tr>
+
+                    <td>@share.OriginalValue</td>
+
+                    <td>@share.Share1</td>
+
+                    <td>@share.Share2</td>
+
+                    <td>@share.Share3</td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+    <hr />
+
+    <h2>Información que posee cada servidor</h2>
+
+    <table class="table">
+
+        <thead>
+
+            <tr>
+
+                <th>Servidor</th>
+
+                <th>Suma de las partes</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+
+                <td>Servidor 1</td>
+
+                <td>@Result.Server1Total</td>
+
+            </tr>
+
+            <tr>
+
+                <td>Servidor 2</td>
+
+                <td>@Result.Server2Total</td>
+
+            </tr>
+
+            <tr>
+
+                <td>Servidor 3</td>
+
+                <td>@Result.Server3Total</td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+    <hr />
+
+    <h2>Reconstrucción</h2>
+
+    <p>
+
+        <strong>Suma reconstruida:</strong>
+
+        @Result.Total
+
+    </p>
+
+    <p>
+
+        <strong>Promedio:</strong>
+
+        @Result.Average
+
+    </p>
+
+    <hr />
+
+}
+
+@code
+{
+    private string GradesInput = "40,35,50,25";
+
+    private MPCResultModel? Result;
+
+    private string ValidationMessage = "";
+
+    //Función de calcular verificando las condiciones de las notas
+    private void Calculate()
+    {
+        ValidationMessage = "";
+        Result = null;
+
+        try
+        {
+            List<int> grades = GradesInput
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => int.Parse(x.Trim()))
+                .ToList();
+
+            if (grades.Count == 0)
+            {
+                ValidationMessage = "Debe ingresar al menos una nota.";
+                return;
+            }
+
+            if (grades.Any(g => g < 0 || g > 50))
+            {
+                ValidationMessage = "Todas las notas deben estar entre 0 y 50.";
+                return;
+            }
+
+            Result = MPCService.Process(grades);
+        }
+        catch
+        {
+            ValidationMessage = "Ingrese únicamente números enteros separados por comas.";
+        }
+    }
+}

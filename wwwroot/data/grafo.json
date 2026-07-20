@@ -1,9 +1,8 @@
-// Nodos y aristas para formar el grafo. Para modificarlo, que tenga sentido las conexiones entre nodos
 {
   "nodes": [
     {
       "name": "Portal",
-      "x": 80,
+      "x": 81,
       "y": 220
     },
     {

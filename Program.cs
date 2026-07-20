@@ -5,6 +5,8 @@ using ProgramacionDiscreta.Src.Criptografia.Cesar;
 using ProgramacionDiscreta.Src.Criptografia.MPC;
 using ProgramacionDiscreta.Src.Criptografia.RSA;
 using ProgramacionDiscreta.Src.Grafos.Dijkstra;
+using ProgramacionDiscreta.Src.Grafos.ImpactoRed;
+using ProgramacionDiscreta.Views.Grafos;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -20,5 +22,6 @@ builder.Services.AddScoped<SecretSharing>();
 builder.Services.AddScoped<MPC>();
 builder.Services.AddScoped<GrafoService>();
 builder.Services.AddScoped<DijkstraService>();
+builder.Services.AddScoped<ImpactoRedService>();
 
 await builder.Build().RunAsync();

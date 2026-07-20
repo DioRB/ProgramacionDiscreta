@@ -17,6 +17,15 @@ namespace ProgramacionDiscreta.Src.Grafos.Dijkstra
             // Conjunto de vértices pendientes por visitar
             HashSet<string> unvisited = new();
 
+            if (!graph.ContainsKey(start) || !graph.ContainsKey(end))
+            {
+                return new ResultadoTramoModel
+                {
+                    Exists = false,
+                    Distance = int.MaxValue,
+                    Path = new List<string>()
+                };
+            }
             foreach (var vertex in graph.Keys)
             {
                 distances[vertex] = int.MaxValue;

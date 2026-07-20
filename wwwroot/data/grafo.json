@@ -1,0 +1,207 @@
+// Nodos y aristas para formar el grafo. Para modificarlo, que tenga sentido las conexiones entre nodos
+{
+  "nodes": [
+    {
+      "name": "Portal",
+      "x": 80,
+      "y": 220
+    },
+    {
+      "name": "Museo",
+      "x": 220,
+      "y": 120
+    },
+    {
+      "name": "Centro",
+      "x": 430,
+      "y": 120
+    },
+    {
+      "name": "Universidad",
+      "x": 320,
+      "y": 260
+    },
+    {
+      "name": "Calle26",
+      "x": 560,
+      "y": 220
+    },
+    {
+      "name": "Hospital",
+      "x": 430,
+      "y": 360
+    },
+    {
+      "name": "Parque",
+      "x": 200,
+      "y": 380
+    },
+    {
+      "name": "Terminal",
+      "x": 600,
+      "y": 80
+    },
+    {
+      "name": "Maloka",
+      "x": 120,
+      "y": 500
+    },
+    {
+      "name": "Corferias",
+      "x": 300,
+      "y": 480
+    },
+    {
+      "name": "Campin",
+      "x": 310,
+      "y": 40
+    },
+    {
+      "name": "Chapinero",
+      "x": 500,
+      "y": 30
+    },
+    {
+      "name": "PlazaBolivar",
+      "x": 520,
+      "y": 450
+    },
+    {
+      "name": "Monserrate",
+      "x": 680,
+      "y": 320
+    }
+  ],
+  "edges": [
+    {
+      "from": "Portal",
+      "to": "Museo",
+      "weight": 4
+    },
+    {
+      "from": "Portal",
+      "to": "Parque",
+      "weight": 6
+    },
+    {
+      "from": "Museo",
+      "to": "Centro",
+      "weight": 5
+    },
+    {
+      "from": "Museo",
+      "to": "Universidad",
+      "weight": 3
+    },
+    {
+      "from": "Centro",
+      "to": "Universidad",
+      "weight": 4
+    },
+    {
+      "from": "Centro",
+      "to": "Calle26",
+      "weight": 2
+    },
+    {
+      "from": "Centro",
+      "to": "Terminal",
+      "weight": 6
+    },
+    {
+      "from": "Universidad",
+      "to": "Hospital",
+      "weight": 5
+    },
+    {
+      "from": "Universidad",
+      "to": "Parque",
+      "weight": 2
+    },
+    {
+      "from": "Hospital",
+      "to": "Calle26",
+      "weight": 3
+    },
+    {
+      "from": "Hospital",
+      "to": "Parque",
+      "weight": 7
+    },
+    {
+      "from": "Calle26",
+      "to": "Terminal",
+      "weight": 4
+    },
+    {
+      "from": "Portal",
+      "to": "Maloka",
+      "weight": 5
+    },
+    {
+      "from": "Parque",
+      "to": "Maloka",
+      "weight": 4
+    },
+    {
+      "from": "Maloka",
+      "to": "Corferias",
+      "weight": 3
+    },
+    {
+      "from": "Corferias",
+      "to": "Hospital",
+      "weight": 4
+    },
+    {
+      "from": "Corferias",
+      "to": "PlazaBolivar",
+      "weight": 6
+    },
+    {
+      "from": "Museo",
+      "to": "Campin",
+      "weight": 4
+    },
+    {
+      "from": "Campin",
+      "to": "Centro",
+      "weight": 5
+    },
+    {
+      "from": "Campin",
+      "to": "Chapinero",
+      "weight": 3
+    },
+    {
+      "from": "Centro",
+      "to": "Chapinero",
+      "weight": 5
+    },
+    {
+      "from": "Chapinero",
+      "to": "Terminal",
+      "weight": 4
+    },
+    {
+      "from": "Calle26",
+      "to": "Monserrate",
+      "weight": 5
+    },
+    {
+      "from": "Terminal",
+      "to": "Monserrate",
+      "weight": 6
+    },
+    {
+      "from": "Hospital",
+      "to": "PlazaBolivar",
+      "weight": 2
+    },
+    {
+      "from": "PlazaBolivar",
+      "to": "Monserrate",
+      "weight": 3
+    }
+  ]
+}

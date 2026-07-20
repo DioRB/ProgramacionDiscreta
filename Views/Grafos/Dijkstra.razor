@@ -1,0 +1,249 @@
+﻿@page "/dijkstra"
+
+@using ProgramacionDiscreta.Src.Grafos.Dijkstra
+
+@inject GrafoService GrafoService
+@inject DijkstraService DijkstraService
+
+<h1>Ruta más corta - Algoritmo de Dijkstra</h1>
+
+<p>
+    Una ciudad puede representarse mediante un grafo ponderado, donde cada vértice representa un lugar
+    y cada arista representa una conexión con una distancia determinada.
+</p>
+
+<hr />
+
+<div class="input-group">
+
+    <label>Origen</label>
+
+    <select @bind="Origin">
+
+        @foreach (var node in Nodes)
+        {
+            <option value="@node.Name">
+                @node.Name
+            </option>
+        }
+
+    </select>
+
+</div>
+
+<div class="input-group">
+
+    <label>Destino</label>
+
+    <select @bind="Destination">
+
+        @foreach (var node in Nodes)
+        {
+            <option value="@node.Name">
+                @node.Name
+            </option>
+        }
+
+    </select>
+
+</div>
+
+<button class="primary-btn"
+        @onclick="CalculatePath">
+
+    Calcular ruta más corta
+
+</button>
+
+@if (!string.IsNullOrWhiteSpace(ValidationMessage))
+{
+    <div class="validation-box">
+
+        <strong>Error:</strong>
+
+        <p>@ValidationMessage</p>
+
+    </div>
+}
+
+<hr />
+
+<h2>Ciudad</h2>
+
+<center>
+
+    <svg width="900"
+         height="600"
+         class="graph-svg">
+
+        @* Aristas *@
+        @foreach (var edge in Edges)
+        {
+            var from = Nodes.First(n => n.Name == edge.From);
+            var to = Nodes.First(n => n.Name == edge.To);
+
+            bool isHighlighted = IsEdgeInPath(edge);
+
+            <g>
+
+                <line x1="@from.X"
+                      y1="@from.Y"
+                      x2="@to.X"
+                      y2="@to.Y"
+                      class="@(isHighlighted ? "path-line" : "graph-line")" />
+
+                <text x="@((from.X+to.X)/2)"
+                      y="@((from.Y+to.Y)/2-8)"
+                      class="edge-label">
+
+                    @edge.Weight
+
+                </text>
+
+            </g>
+        }
+
+        @* Vértices *@
+        @foreach (var node in Nodes)
+        {
+            bool selected =
+            node.Name == Origin ||
+            node.Name == Destination;
+
+            <g>
+
+                <circle cx="@node.X"
+                        cy="@node.Y"
+                        r="18"
+                        class="@(selected ? "selected-node" : "graph-node")" />
+
+                <text x="@node.X"
+                      y="@(node.Y+35)"
+                      class="node-label">
+
+                    @node.Name
+
+                </text>
+
+            </g>
+        }
+
+    </svg>
+
+</center>
+
+@if (Result != null)
+{
+    <hr />
+
+    <h2>Resultado</h2>
+
+    <p>
+
+        <strong>Distancia total:</strong>
+
+        @Result.Distance
+
+    </p>
+
+    <p>
+
+        <strong>Ruta encontrada:</strong>
+
+    </p>
+
+    <ol>
+
+        @foreach (var city in Result.Path)
+        {
+            <li>@city</li>
+        }
+
+    </ol>
+
+    <hr />
+
+
+}
+
+@code
+{
+    private List<GrafoNodoModel> Nodes = new();
+
+    private List<GrafoAristaModel> Edges = new();
+
+    private ResultadoTramoModel? Result;
+
+    private string Origin = "";
+
+    private string Destination = "";
+
+    private string ValidationMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GrafoService.LoadGraphAsync();
+
+        Nodes = GrafoService.GetNodes();
+
+        Edges = GrafoService.GetEdges();
+
+        if (Nodes.Any())
+        {
+            Origin = Nodes.First().Name;
+            Destination = Nodes.Last().Name;
+        }
+    }
+
+    private void CalculatePath()
+    {
+        ValidationMessage = "";
+
+        Result = null;
+
+        if (Origin == Destination)
+        {
+            ValidationMessage =
+                "El origen y el destino deben ser diferentes.";
+
+            return;
+        }
+
+        var graph = GrafoService.BuildGraph();
+
+        Result = DijkstraService.FindShortestPath(
+            graph,
+            Origin,
+            Destination);
+
+        if (!Result.Exists)
+        {
+            ValidationMessage =
+                "No existe un camino entre los vértices seleccionados.";
+
+            Result = null;
+        }
+    }
+
+    // Verifica si una arista pertenece a la ruta óptima
+    // para resaltarla en el SVG.
+    private bool IsEdgeInPath(GrafoAristaModel edge)
+    {
+        if (Result == null)
+            return false;
+
+        for (int i = 0; i < Result.Path.Count - 1; i++)
+        {
+            string from = Result.Path[i];
+            string to = Result.Path[i + 1];
+
+            if ((edge.From == from && edge.To == to) ||
+                (edge.From == to && edge.To == from))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}

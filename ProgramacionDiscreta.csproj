@@ -19,12 +19,10 @@
     <Folder Include="Src\AlgebraBooleana\" />
     <Folder Include="Src\Core\" />
     <Folder Include="Src\Cuantico\" />
-    <Folder Include="Src\Grafos\" />
     <Folder Include="Src\TeoriaInformacion\" />
     <Folder Include="Tests\" />
     <Folder Include="Views\Boolean\" />
     <Folder Include="Views\Cuantico\" />
-    <Folder Include="Views\Grafos\" />
     <Folder Include="Views\Shannon\" />
   </ItemGroup>
 

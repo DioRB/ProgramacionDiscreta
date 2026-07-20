@@ -14,7 +14,7 @@ namespace ProgramacionDiscreta.Src.Grafos.Dijkstra
             _httpClient = httpClient;
         }
 
-        // Carga el grafo desde graph.json
+        // Carga el grafo desde grafo.json
         public async Task LoadGraphAsync()
         {
             if (_graph != null)

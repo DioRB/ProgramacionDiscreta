@@ -1,0 +1,420 @@
+﻿@page "/impactored"
+
+@using ProgramacionDiscreta.Src.Grafos.Dijkstra
+@using ProgramacionDiscreta.Src.Grafos.ImpactoRed
+
+@inject GrafoService GrafoService
+@inject ImpactoRedService ImpactoRedService
+
+
+<h1>Impacto del cierre de una estación</h1>
+
+<p>
+    Analiza cómo cambian las rutas más cortas cuando una estación o una conexión
+    deja de estar disponible.
+</p>
+
+<hr />
+
+<div class="input-group">
+
+    <label>Tipo de cierre</label>
+
+    <select @bind="ClosureType">
+
+        <option value="Node">Estación</option>
+
+        <option value="Edge">Conexión</option>
+
+    </select>
+
+</div>
+
+@if (ClosureType == "Node")
+{
+    <div class="input-group">
+
+        <label>Estación a cerrar</label>
+
+        <select @bind="SelectedNode">
+
+            @foreach (var node in Nodes)
+            {
+                <option value="@node.Name">
+                    @node.Name
+                </option>
+            }
+
+        </select>
+
+    </div>
+}
+else
+{
+    <div class="input-group">
+
+        <label>Origen de la conexión</label>
+
+        <select @bind="EdgeFrom">
+
+            @foreach (var node in Nodes)
+            {
+                <option value="@node.Name">
+                    @node.Name
+                </option>
+            }
+
+        </select>
+
+    </div>
+
+    <div class="input-group">
+
+        <label>Destino de la conexión</label>
+
+        <select @bind="EdgeTo">
+
+            @foreach (var node in Nodes)
+            {
+                <option value="@node.Name">
+                    @node.Name
+                </option>
+            }
+
+        </select>
+
+    </div>
+}
+
+<button class="primary-btn"
+        @onclick="AnalyzeImpact">
+    Analizar impacto
+</button>
+
+<h2>Grafo actual</h2>
+
+<center>
+    <svg width="900"
+         height="600"
+         class="graph-svg">
+
+        @* Aristas *@
+        @foreach (var edge in Edges)
+        {
+            var from = Nodes.First(n => n.Name == edge.From);
+            var to = Nodes.First(n => n.Name == edge.To);
+
+            <g>
+
+                <line x1="@from.X"
+                      y1="@from.Y"
+                      x2="@to.X"
+                      y2="@to.Y"
+                      class="@GetEdgeClass(edge)" />
+
+                <text x="@((from.X+to.X)/2)"
+                      y="@((from.Y+to.Y)/2-8)"
+                      class="edge-label">
+
+                    @edge.Weight
+
+                </text>
+
+            </g>
+        }
+
+        @* Vértices *@
+        @foreach (var node in Nodes)
+        {
+            <g>
+
+                <circle cx="@node.X"
+                        cy="@node.Y"
+                        r="18"
+                        class="@GetNodeClass(node)" />
+
+                <text x="@node.X"
+                      y="@(node.Y+35)"
+                      class="node-label">
+
+                    @node.Name
+
+                </text>
+
+            </g>
+        }
+
+    </svg>
+</center>
+
+<button class="secondary-btn"
+        @onclick="GenerateRandomPairs">
+    Generar nuevos pares
+</button>
+@if (TestPairs.Any())
+{
+    <h3>Pares analizados</h3>
+
+    <ul>
+        @foreach (var pair in TestPairs)
+        {
+            <li>@pair.Origin → @pair.Destination</li>
+        }
+    </ul>
+}
+<hr />
+
+@if (Results.Any())
+{
+    <h2>Resultados</h2>
+
+    <table class="result-table">
+
+        <thead>
+
+            <tr>
+
+                <th>Origen</th>
+
+                <th>Destino</th>
+
+                <th>Antes</th>
+
+                <th>Después</th>
+
+                <th>Diferencia</th>
+
+                <th>Estado</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var result in Results)
+            {
+                <tr>
+
+                    <td>@result.Origin</td>
+
+                    <td>@result.Destination</td>
+
+                    <td>
+                        @(result.DistanceBefore?.ToString() ?? "-")
+                    </td>
+
+                    <td>
+                        @(result.DistanceAfter?.ToString() ?? "-")
+                    </td>
+
+                    <td>
+                        @(result.Difference?.ToString() ?? "-")
+                    </td>
+
+                    <td>@result.Status</td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+    <hr />
+
+}
+@code
+{
+    // Grafo cargado desde graph.json
+    private List<GrafoNodoModel> Nodes = new();
+
+    private List<GrafoAristaModel> Edges = new();
+
+    private string? ClosedNode;
+    private (string From, string To)? ClosedEdge;
+
+    private Dictionary<string, List<(string Neighbor, int Weight)>> Graph = new();
+
+    // Tipo de cierre
+    private string ClosureType = "Node";
+
+    // Estación seleccionada
+    private string SelectedNode = "";
+
+    // Conexión seleccionada
+    private string EdgeFrom = "";
+    private string EdgeTo = "";
+
+    // Resultado del análisis
+    private List<ImpactoResultadoModel> Results = new();
+
+    // Cinco pares solicitados por el enunciado
+    private List<(string Origin, string Destination)> TestPairs = new();
+
+    private List<NodoVisual> VisualNodes = new();
+
+    private Dictionary<string, List<(string Neighbor, int Weight)>> CurrentGraph = new();
+
+    private readonly Random Random = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GrafoService.LoadGraphAsync();
+
+        Nodes = GrafoService.GetNodes();
+        Edges = GrafoService.GetEdges();
+
+        Graph = GrafoService.BuildGraph();
+
+        GenerateRandomPairs();
+
+        if (Nodes.Any())
+        {
+            SelectedNode = Nodes.First().Name;
+
+            EdgeFrom = Nodes.First().Name;
+
+            EdgeTo = Nodes.Last().Name;
+        }
+    }
+
+    // Ejecuta el análisis del impacto
+    private void AnalyzeImpact()
+    {
+        ClosedNode = null;
+        ClosedEdge = null;
+
+        Results.Clear();
+
+        if (ClosureType == "Node")
+        {
+            ClosedNode = SelectedNode;
+
+            Results =
+                ImpactoRedService.AnalyzeNodeClosure(
+                    Graph,
+                    SelectedNode,
+                    TestPairs);
+        }
+        else
+        {
+            ClosedEdge = (EdgeFrom, EdgeTo);
+
+            Results =
+                ImpactoRedService.AnalyzeEdgeClosure(
+                    Graph,
+                    EdgeFrom,
+                    EdgeTo,
+                    TestPairs);
+        }
+    }
+
+    //EN DESUSO POR AHORA. MÁS ABAJO ESTÁ EN ALEATORIO
+    // Genera automáticamente hasta cinco pares origen-destino. Más abajo están
+    private void GenerateTestPairs()
+    {
+        TestPairs.Clear();
+
+        if (Nodes.Count < 2)
+            return;
+
+        for (int i = 0; i < Nodes.Count - 1 && TestPairs.Count < 5; i++)
+        {
+            TestPairs.Add(
+            (
+                Nodes[i].Name,
+                Nodes[i + 1].Name
+            ));
+        }
+
+        // Si aún faltan pares, completa usando el primer nodo
+        int index = 2;
+
+        while (TestPairs.Count < 5 && index < Nodes.Count)
+        {
+            TestPairs.Add(
+            (
+                Nodes[0].Name,
+                Nodes[index].Name
+            ));
+
+            index++;
+        }
+    }
+
+    private void CreateVisualNodes()
+    {
+        VisualNodes.Clear();
+
+        double radius = 180;
+        double centerX = 250;
+        double centerY = 220;
+
+        for (int i = 0; i < Nodes.Count; i++)
+        {
+            double angle = 2 * Math.PI * i / Nodes.Count;
+
+            VisualNodes.Add(new NodoVisual
+                {
+                    Name = Nodes[i].Name,
+                    X = centerX + radius * Math.Cos(angle),
+                    Y = centerY + radius * Math.Sin(angle)
+                });
+        }
+    }
+
+    private NodoVisual GetVisualNode(string name)
+    {
+        return VisualNodes.First(v => v.Name == name);
+    }
+
+    private string GetEdgeClass(GrafoAristaModel edge)
+    {
+        if (ClosedEdge == null)
+            return "graph-line";
+
+        if ((edge.From == ClosedEdge.Value.From &&
+             edge.To == ClosedEdge.Value.To)
+            ||
+            (edge.From == ClosedEdge.Value.To &&
+             edge.To == ClosedEdge.Value.From))
+        {
+            return "closed-edge";
+        }
+
+        return "graph-line";
+    }
+    private string GetNodeClass(GrafoNodoModel node)
+    {
+        if (ClosedNode == node.Name)
+            return "closed-node";
+
+        return "graph-node";
+    }
+
+    //Generador de los parea aleatoriamente. 
+    private void GenerateRandomPairs()
+    {
+        TestPairs.Clear();
+
+        if (Nodes.Count < 2)
+            return;
+    // Cambiar el condicional para más pares
+        while (TestPairs.Count < 5)
+        {
+            var origin = Nodes[Random.Next(Nodes.Count)].Name;
+            var destination = Nodes[Random.Next(Nodes.Count)].Name;
+
+            if (origin == destination)
+                continue;
+
+            if (TestPairs.Any(p =>
+                p.Origin == origin &&
+                p.Destination == destination))
+                continue;
+
+            TestPairs.Add((origin, destination));
+        }
+    }
+}

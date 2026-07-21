@@ -258,7 +258,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await GrafoService.LoadGraphAsync();
+        await GrafoService.LoadGraphAsync("grafo.json");
 
         Nodes = GrafoService.GetNodes();
         Edges = GrafoService.GetEdges();

@@ -1,0 +1,193 @@
+{
+  "nodes": [
+    {
+      "name": "Algebra",
+      "x": 100,
+      "y": 100
+    },
+    {
+      "name": "Programacion",
+      "x": 300,
+      "y": 60
+    },
+    {
+      "name": "EstructurasDeDatos",
+      "x": 520,
+      "y": 120
+    },
+    {
+      "name": "BasesDatos",
+      "x": 750,
+      "y": 70
+    },
+
+    {
+      "name": "Fisica",
+      "x": 120,
+      "y": 270
+    },
+    {
+      "name": "Calculo",
+      "x": 310,
+      "y": 200
+    },
+    {
+      "name": "Estadistica",
+      "x": 530,
+      "y": 280
+    },
+    {
+      "name": "IngenieriaSoftware",
+      "x": 780,
+      "y": 220
+    },
+
+    {
+      "name": "SistemasOperativos",
+      "x": 140,
+      "y": 440
+    },
+    {
+      "name": "Compiladores",
+      "x": 380,
+      "y": 380
+    },
+    {
+      "name": "IA",
+      "x": 600,
+      "y": 420
+    },
+    {
+      "name": "Ciberseguridad",
+      "x": 820,
+      "y": 360
+    },
+
+    {
+      "name": "Redes",
+      "x": 480,
+      "y": 550
+    },
+    {
+      "name": "SistemasDistribuidos",
+      "x": 720,
+      "y": 540
+    }
+  ],
+
+  "edges": [
+    {
+      "from": "Algebra",
+      "to": "Programacion",
+      "weight": 1
+    },
+    {
+      "from": "Algebra",
+      "to": "Calculo",
+      "weight": 1
+    },
+    {
+      "from": "Algebra",
+      "to": "Fisica",
+      "weight": 1
+    },
+
+    {
+      "from": "Programacion",
+      "to": "EstructurasDeDatos",
+      "weight": 1
+    },
+    {
+      "from": "Programacion",
+      "to": "BasesDatos",
+      "weight": 1
+    },
+    {
+      "from": "Programacion",
+      "to": "Compiladores",
+      "weight": 1
+    },
+
+    {
+      "from": "EstructurasDeDatos",
+      "to": "BasesDatos",
+      "weight": 1
+    },
+    {
+      "from": "EstructurasDeDatos",
+      "to": "IA",
+      "weight": 1
+    },
+    {
+      "from": "EstructurasDeDatos",
+      "to": "SistemasOperativos",
+      "weight": 1
+    },
+
+    {
+      "from": "BasesDatos",
+      "to": "Redes",
+      "weight": 1
+    },
+    {
+      "from": "BasesDatos",
+      "to": "IngenieriaSoftware",
+      "weight": 1
+    },
+
+    {
+      "from": "Redes",
+      "to": "Ciberseguridad",
+      "weight": 1
+    },
+    {
+      "from": "Redes",
+      "to": "SistemasDistribuidos",
+      "weight": 1
+    },
+
+    {
+      "from": "Fisica",
+      "to": "Calculo",
+      "weight": 1
+    },
+    {
+      "from": "Calculo",
+      "to": "Estadistica",
+      "weight": 1
+    },
+
+    {
+      "from": "Estadistica",
+      "to": "IA",
+      "weight": 1
+    },
+    {
+      "from": "Estadistica",
+      "to": "IngenieriaSoftware",
+      "weight": 1
+    },
+
+    {
+      "from": "SistemasOperativos",
+      "to": "Compiladores",
+      "weight": 1
+    },
+    {
+      "from": "SistemasOperativos",
+      "to": "SistemasDistribuidos",
+      "weight": 1
+    },
+
+    {
+      "from": "IngenieriaSoftware",
+      "to": "Ciberseguridad",
+      "weight": 1
+    },
+    {
+      "from": "Compiladores",
+      "to": "IA",
+      "weight": 1
+    }
+  ]
+}

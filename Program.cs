@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using ProgramacionDiscreta;
+using ProgramacionDiscreta.Src.AlgebraBooleana.TablasVerdad;
 using ProgramacionDiscreta.Src.Criptografia.Cesar;
 using ProgramacionDiscreta.Src.Criptografia.MPC;
 using ProgramacionDiscreta.Src.Criptografia.RSA;
+using ProgramacionDiscreta.Src.Grafos.ColoreoGrafo;
 using ProgramacionDiscreta.Src.Grafos.Dijkstra;
 using ProgramacionDiscreta.Src.Grafos.ImpactoRed;
 using ProgramacionDiscreta.Views.Grafos;
@@ -23,5 +25,10 @@ builder.Services.AddScoped<MPC>();
 builder.Services.AddScoped<GrafoService>();
 builder.Services.AddScoped<DijkstraService>();
 builder.Services.AddScoped<ImpactoRedService>();
+builder.Services.AddScoped<ColoreoGrafoService>();
+builder.Services.AddScoped<ValidacionColoreoService>();
+builder.Services.AddScoped<ExpresionBoolService>();
+builder.Services.AddScoped<GeneradorTablaVerdadService>();
+
 
 await builder.Build().RunAsync();

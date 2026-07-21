@@ -15,13 +15,11 @@ namespace ProgramacionDiscreta.Src.Grafos.Dijkstra
         }
 
         // Carga el grafo desde grafo.json
-        public async Task LoadGraphAsync()
+        public async Task LoadGraphAsync(string fileName = "grafo.json")
         {
-            if (_graph != null)
-                return;
+            var path = $"data/{fileName}";
 
-            var json =
-                await _httpClient.GetStringAsync("data/grafo.json");
+            var json = await _httpClient.GetStringAsync(path);
 
             _graph =
                 JsonSerializer.Deserialize<GrafoData>(json)

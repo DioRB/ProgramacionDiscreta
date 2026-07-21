@@ -1,0 +1,277 @@
+﻿@page "/coloreografos"
+
+@using ProgramacionDiscreta.Src.Grafos.Dijkstra
+@using ProgramacionDiscreta.Src.Grafos.ColoreoGrafo
+
+@inject GrafoService GrafoService
+@inject ColoreoGrafoService ColoreoGrafoService
+@inject ValidacionColoreoService ValidacionColoreoService
+
+<h1>Coloreo de Grafos</h1>
+
+<p>
+    Cada vértice representa una materia y cada arista representa un conflicto
+    (existen estudiantes inscritos en ambas materias). El algoritmo voraz asigna
+    una franja horaria (color) procurando reutilizar la menor cantidad posible
+    de colores sin producir conflictos.
+</p>
+<p>Nodos: @Nodes.Count</p>
+<p>Aristas: @Edges.Count</p>
+
+<hr />
+
+<button class="primary-btn"
+        @onclick="ColorGraph">
+    Ejecutar coloreo
+</button>
+
+@if (Nodes.Any())
+{
+    <hr />
+
+    <center>
+
+        <svg width="1100"
+             height="700"
+             class="graph-svg">
+
+            @foreach (var edge in Edges)
+            {
+                var from = Nodes.FirstOrDefault(n => n.Name == edge.From);
+                var to = Nodes.FirstOrDefault(n => n.Name == edge.To);
+
+                if (from == null || to == null)
+                {
+                    <p style="color:red">
+                        No encontré: @edge.From -> @edge.To
+                    </p>
+                }
+                else
+                {
+                    <line
+                        x1="@from.X"
+                        y1="@from.Y"
+                        x2="@to.X"
+                        y2="@to.Y"
+                        stroke="black"
+                        stroke-width="4"/>
+                }
+            }
+
+            @* Vértices *@
+            @foreach (var node in Nodes)
+            {
+                <g>
+
+                    <circle
+                        cx="@node.X"
+                        cy="@node.Y"
+                        r="18"
+                        fill="@GetNodeColor(node.Name)"
+                        class="graph-node" />
+
+                    <text
+                        x="@node.X"
+                        y="@(node.Y + 35)"
+                        class="node-label">
+
+                        @node.Name
+
+                    </text>
+
+                </g>
+            }
+
+        </svg>
+
+    </center>
+}
+
+@if (Result is not null)
+{
+    <hr />
+
+    <h2>Resultado</h2>
+
+    <p>
+
+        <strong>Franjas horarias utilizadas:</strong>
+
+        @Result.NumberOfColors
+
+    </p>
+
+    <p>
+
+        <strong>Asignación válida:</strong>
+
+        @(Result.IsValid ? "Sí" : "No")
+
+    </p>
+
+    <hr />
+
+    <h2>Materias por franja</h2>
+
+    @foreach (var group in ColorGroups.OrderBy(g => g.Key))
+    {
+        <div class="color-block">
+
+            <h3>
+
+                Franja @group.Key
+
+            </h3>
+
+            <ul>
+
+                @foreach (var course in group.Value)
+                {
+                    <li>@course</li>
+                }
+
+            </ul>
+
+        </div>
+    }
+
+    <hr />
+
+    <h2>Asignación individual</h2>
+
+    <table class="result-table">
+
+        <thead>
+
+            <tr>
+
+                <th>Materia</th>
+
+                <th>Franja</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var assignment in Result.Assignments)
+            {
+                <tr>
+
+                    <td>@assignment.Vertex</td>
+
+                    <td>@assignment.Color</td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+}
+
+@code
+{
+    // Grafo cargado desde graph.json
+    private List<GrafoNodoModel> Nodes = new();
+
+    private List<GrafoAristaModel> Edges = new();
+
+    // Grafo en forma de lista de adyacencia
+    private Dictionary<string, List<string>> Graph = new();
+
+    // Resultado del algoritmo
+    private ResultadoColoreoModel? Result;
+
+    // Materias agrupadas por franja (color)
+    private Dictionary<int, List<string>> ColorGroups = new();
+
+    // Colores para dibujar el grafo
+    private readonly List<string> Palette = new()
+    {
+        "#4CAF50",
+        "#2196F3",
+        "#FF9800",
+        "#E91E63",
+        "#9C27B0",
+        "#795548",
+        "#009688",
+        "#FFC107",
+        "#607D8B",
+        "#F44336"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GrafoService.LoadGraphAsync("coloreo.json");
+
+        Nodes = GrafoService.GetNodes();
+
+        Edges = GrafoService.GetEdges();
+
+        Graph = BuildAdjacencyGraph();
+    }
+
+    // Construye la lista de adyacencia ignorando el peso
+    private Dictionary<string, List<string>> BuildAdjacencyGraph()
+    {
+        Dictionary<string, List<string>> graph = new();
+
+        foreach (var node in Nodes)
+        {
+            graph[node.Name] = new List<string>();
+        }
+
+        foreach (var edge in Edges)
+        {
+            graph[edge.From].Add(edge.To);
+
+            graph[edge.To].Add(edge.From);
+        }
+
+        return graph;
+    }
+
+    // Ejecuta el algoritmo voraz
+    private void ColorGraph()
+    {
+        Result = ColoreoGrafoService.ColorGraph(Graph);
+        foreach (var edge in Edges)
+        {
+            var c1 = Result.Assignments.First(a => a.Vertex == edge.From).Color;
+            var c2 = Result.Assignments.First(a => a.Vertex == edge.To).Color;
+
+            Console.WriteLine($"{edge.From}({c1}) - {edge.To}({c2})");
+        }
+        Result.IsValid =
+            ValidacionColoreoService.Validate(
+            Graph,
+                Result.Assignments);
+
+        ColorGroups =
+            ColoreoGrafoService.GroupByColor(Result);
+    }
+
+    // Devuelve el color correspondiente a cada vértice
+    private string GetNodeColor(string vertex)
+    {
+        if (Result == null)
+            return "#66BB6A";
+
+        var assignment =
+            Result.Assignments
+                .FirstOrDefault(a => a.Vertex == vertex);
+
+        if (assignment == null)
+            return "#66BB6A";
+
+        return Palette[
+            assignment.Color % Palette.Count];
+    }
+
+    private string GetEdgeClass(GrafoAristaModel edge)
+    {
+        return "graph-line";
+    }
+}

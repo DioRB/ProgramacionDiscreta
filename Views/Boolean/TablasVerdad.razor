@@ -1,0 +1,189 @@
+﻿@page "/tablaverdad"
+@using Microsoft.AspNetCore.Components.Forms
+@using ProgramacionDiscreta.Src.AlgebraBooleana.TablasVerdad
+
+@inject GeneradorTablaVerdadService GeneradorTablaVerdadService
+@inject ExpresionBoolService ExpresionBoolService
+
+<PageTitle>Tablas de Verdad</PageTitle>
+
+<h3>Tablas de verdad y circuitos lógicos</h3>
+
+<div class="card p-3 mb-4">
+
+    <div class="mb-3">
+        <label class="form-label">Expresión</label>
+
+        <select class="form-select" @bind="SelectedExpression">
+            <option value="1">(A ∧ B) ∨ (¬C)</option>
+            <option value="2">(A ⊕ B) ∧ C</option>
+            <option value="3">(A ∨ B) ∧ (¬A ∨ C)</option>
+            <option value="4">(¬A ∧ B) ∨ (C ⊕ D)</option>
+            <option value="5">(A ∧ ¬B) ∨ (¬C ∧ D)</option>
+        </select>
+    </div>
+
+    <button class="btn btn-primary"
+            @onclick="GenerateTable">
+        Generar tabla
+    </button>
+
+</div>
+
+@if (Table is not null)
+{
+    <h4>@Table.ExpressionName</h4>
+
+    <table class="table table-bordered table-striped">
+
+        <thead>
+
+            <tr>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+                <th>D</th>
+                <th>Resultado</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var row in Table.Rows)
+            {
+                <tr>
+                    <td>@BoolText(row.A)</td>
+                    <td>@BoolText(row.B)</td>
+                    <td>@BoolText(row.C)</td>
+                    <td>@BoolText(row.D)</td>
+                    <td>
+                        <strong>@BoolText(row.Result)</strong>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+}
+
+<hr />
+
+<h4>Evaluar una entrada específica</h4>
+
+<div class="row">
+
+    <div class="col-md-2">
+
+        <label>A</label>
+
+        <InputSelect class="form-select" @bind-Value="InputA">
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </InputSelect>
+
+    </div>
+
+    <div class="col-md-2">
+
+        <label>B</label>
+
+        <InputSelect class="form-select" @bind-Value="InputB">
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </InputSelect>
+
+    </div>
+
+    <div class="col-md-2">
+
+        <label>C</label>
+
+        <InputSelect class="form-select" @bind-Value="InputC">
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </InputSelect>
+
+    </div>
+
+    <div class="col-md-2">
+
+        <label>D</label>
+
+        <InputSelect class="form-select" @bind-Value="InputD">
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </InputSelect>
+
+    </div>
+
+</div>
+
+<br />
+
+<button class="btn btn-success"
+        @onclick="EvaluateExpression">
+    Evaluar expresión
+</button>
+
+@if (EvaluationDone)
+{
+    <div class="alert alert-info mt-3">
+
+        <h5>Resultado</h5>
+
+        <p>
+
+            <strong>
+                @BoolText(EvaluationResult)
+            </strong>
+
+        </p>
+
+    </div>
+}
+
+@code {
+
+    private int SelectedExpression = 1;
+
+    private ResultadoTablaModel? Table;
+
+    private bool InputA;
+
+    private bool InputB;
+
+    private bool InputC;
+
+    private bool InputD;
+
+    private bool EvaluationResult;
+
+    private bool EvaluationDone;
+
+    private void GenerateTable()
+    {
+        Table = GeneradorTablaVerdadService.Generate(
+            SelectedExpression);
+    }
+
+    private void EvaluateExpression()
+    {
+        EvaluationResult =
+            ExpresionBoolService.Evaluate(
+                SelectedExpression,
+                InputA,
+                InputB,
+                InputC,
+                InputD);
+
+        EvaluationDone = true;
+    }
+
+    private string BoolText(bool value)
+    {
+        return value ? "1" : "0";
+    }
+
+}

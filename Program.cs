@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using ProgramacionDiscreta;
+using ProgramacionDiscreta.Src.AlgebraBooleana.SimplificacionBooleana;
 using ProgramacionDiscreta.Src.AlgebraBooleana.TablasVerdad;
 using ProgramacionDiscreta.Src.Criptografia.Cesar;
 using ProgramacionDiscreta.Src.Criptografia.MPC;
@@ -29,6 +30,7 @@ builder.Services.AddScoped<ColoreoGrafoService>();
 builder.Services.AddScoped<ValidacionColoreoService>();
 builder.Services.AddScoped<ExpresionBoolService>();
 builder.Services.AddScoped<GeneradorTablaVerdadService>();
+builder.Services.AddScoped<IBooleanSimplifierService, BooleanSimplifierService>();
 
 
 await builder.Build().RunAsync();

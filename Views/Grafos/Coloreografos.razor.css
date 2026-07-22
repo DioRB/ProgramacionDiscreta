@@ -30,7 +30,6 @@
 =========================== */
 
 .graph-node {
-    fill: #4299e1;
     stroke: #2b6cb0;
     stroke-width: 2;
     transition: all .2s;

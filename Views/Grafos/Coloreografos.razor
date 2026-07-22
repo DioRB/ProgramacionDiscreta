@@ -35,6 +35,7 @@
              height="700"
              class="graph-svg">
 
+            @*Aristas*@
             @foreach (var edge in Edges)
             {
                 var from = Nodes.FirstOrDefault(n => n.Name == edge.From);
@@ -63,12 +64,11 @@
             {
                 <g>
 
-                    <circle
-                        cx="@node.X"
-                        cy="@node.Y"
-                        r="18"
-                        fill="@GetNodeColor(node.Name)"
-                        class="graph-node" />
+                    <circle cx="@node.X"
+                            cy="@node.Y"
+                            r="18"
+                            style="fill:@GetNodeColor(node.Name)"
+                            class="graph-node" />
 
                     <text
                         x="@node.X"

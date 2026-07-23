@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Src\Core\**" />
+    <Content Remove="Src\Core\**" />
+    <EmbeddedResource Remove="Src\Core\**" />
+    <None Remove="Src\Core\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="requirements.txt" />
   </ItemGroup>
 
@@ -16,12 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Src\Core\" />
-    <Folder Include="Src\Cuantico\" />
-    <Folder Include="Src\TeoriaInformacion\" />
     <Folder Include="Tests\" />
-    <Folder Include="Views\Cuantico\" />
-    <Folder Include="Views\Shannon\" />
   </ItemGroup>
 
 </Project>

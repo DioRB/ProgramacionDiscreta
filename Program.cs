@@ -6,9 +6,11 @@ using ProgramacionDiscreta.Src.AlgebraBooleana.TablasVerdad;
 using ProgramacionDiscreta.Src.Criptografia.Cesar;
 using ProgramacionDiscreta.Src.Criptografia.MPC;
 using ProgramacionDiscreta.Src.Criptografia.RSA;
+using ProgramacionDiscreta.Src.Cuantico;
 using ProgramacionDiscreta.Src.Grafos.ColoreoGrafo;
 using ProgramacionDiscreta.Src.Grafos.Dijkstra;
 using ProgramacionDiscreta.Src.Grafos.ImpactoRed;
+using ProgramacionDiscreta.Src.Shannon;
 using ProgramacionDiscreta.Views.Grafos;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -31,6 +33,13 @@ builder.Services.AddScoped<ValidacionColoreoService>();
 builder.Services.AddScoped<ExpresionBoolService>();
 builder.Services.AddScoped<GeneradorTablaVerdadService>();
 builder.Services.AddScoped<IBooleanSimplifierService, BooleanSimplifierService>();
+builder.Services.AddScoped<EntropiaShannonService>();
+builder.Services.AddScoped<ComparacionShannonService>();
+builder.Services.AddScoped<QubitGateService>();
+builder.Services.AddScoped<MeasurementService>();
+builder.Services.AddScoped<QuantumSimulationService>();
+
+
 
 
 await builder.Build().RunAsync();
